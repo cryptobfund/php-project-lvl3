@@ -3,7 +3,7 @@ install:
 	composer install
 
 lint:
-	composer run-script phpcs -- --standard=PSR12 tests
+	composer phpcs
 
 lint-fix:
 	composer phpcbf
