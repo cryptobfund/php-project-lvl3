@@ -14,6 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    //return view('welcome');
-    return 'Under construction by Johnik!';
+    return view('new');
+    //return 'Under construction by Johnik!';
 });

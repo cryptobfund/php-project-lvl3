@@ -28,3 +28,4 @@ console:
 
 log:
 	tail -f storage/logs/laravel.lo
+
