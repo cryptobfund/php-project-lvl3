@@ -42,11 +42,11 @@ jobs:
       - name: Validate composer.json and composer.lock
         run: composer validate
 
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
       - name: Check lint
         run: make lint
-
-      - name: Setup project
-        run: make setup
 
       - name: Connect to PostgreSQL
         env:
