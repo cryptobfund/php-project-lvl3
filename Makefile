@@ -3,6 +3,8 @@ setup:
 	composer install
 	cp -n .env.example .env|| true
 	php artisan key:gen --ansi
+	php artisan migrate
+	#touch database/database.sqlite
 
 lint:
 	composer phpcs
@@ -27,5 +29,5 @@ console:
 
 
 log:
-	tail -f storage/logs/laravel.lo
+	tail -f storage/logs/laravel.log
 
