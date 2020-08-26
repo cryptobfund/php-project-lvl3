@@ -21,6 +21,7 @@ jobs:
         # Provide the password for postgres
         env:
           POSTGRES_PASSWORD: postgres
+          DB_DATABASE: dblvl3
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -55,7 +56,7 @@ jobs:
           DB_DATABASE: dblvl3
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
-        run:
+        run: |
           cp .env.example .env
           php artisan key:generate
           php artisan migrate --force
