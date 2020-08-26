@@ -45,4 +45,10 @@ class DomainControllerTest extends TestCase
         $response = $this->get(route("domains.show", ['id' => $id]));
         $response->assertOk();
     }
+
+    public function testWelcome()
+    {
+        $response = $this->get(route('welcome'));
+        $response->assertOk();
+    }
 }
