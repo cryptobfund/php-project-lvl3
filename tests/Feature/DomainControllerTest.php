@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Faker\Factory;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class DomainControllerTest extends TestCase
@@ -58,6 +59,12 @@ class DomainControllerTest extends TestCase
         $name = parse_url($url);
         $parsedName = $name['scheme'] . '://' . $name['host'];
 
+        Http::fake(
+            [
+                $parsedName => Http::response([], 200, []),
+            ]
+        );
+
         $id = DB::table('domains')->insertGetId([
             'name' => $parsedName,
             'created_at' => Carbon::now(),
@@ -67,7 +74,7 @@ class DomainControllerTest extends TestCase
         $response->assertRedirect(route('domains.show', ['id' => $id]));
         $this->assertDatabaseHas('domain_checks', [
                 'domain_id' => $id,
-                'status_code' => 0,
+                'status_code' => 200,
             ]);
     }
 }

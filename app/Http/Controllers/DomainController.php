@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class DomainController extends Controller
 {
@@ -70,15 +71,15 @@ class DomainController extends Controller
     public function check(Request $request, $id)
     {
         $domain = DB::table('domains')->find($id);
+        $response = Http::get($domain->name);
         $time = Carbon::now();
         DB::table('domain_checks')->insert(
             [
                 'domain_id' => $id,
-                //'status_code' => $response->status(),
+                'status_code' => $response->status(),
                 //'h1' => is_null($h1) ? '' : $h1,
                 //'keywords' => is_null($keywords) ? '' : $keywords,
                 //'description' => $description ?? '',
-                'status_code' => 0,
                 'h1' => '',
                 'keywords' => '',
                 'description' => '',
