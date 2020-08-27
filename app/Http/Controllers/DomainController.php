@@ -17,7 +17,13 @@ class DomainController extends Controller
     public function index(Request $request)
     {
         $status = $request->session()->get('status');
-        $domains = DB::table('domains')->orderBy('id')->get();
+        $domains = DB::table('domains')
+            ->leftJoin('domain_checks', 'domains.id', '=', 'domain_checks.domain_id')
+            ->orderBy('domains.id')
+            ->orderByDesc('domain_checks.created_at')
+            ->distinct('domains.id')
+            ->select('domains.id', 'domains.name', 'domain_checks.created_at', 'domain_checks.status_code')
+            ->get();
         return view('domain.index', compact('domains', 'status'));
     }
 
@@ -33,16 +39,17 @@ class DomainController extends Controller
         if ($domain) {
             $status = 'Url already exists';
         } else {
+            $time = Carbon::now();
             $id = DB::table('domains')->insertGetId([
                 'name' => $parsedName,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
+                'created_at' => $time,
+                'updated_at' => $time
             ]);
             $status = 'Url has been added';
             $domain = DB::table('domains')->find($id);
         }
         $request->session()->flash('status', $status);
-        return view('domain.show', compact('domain', 'status'));
+        return redirect()->route('domains.show', ['id' => $domain->id]);
     }
 
     /**
@@ -56,6 +63,31 @@ class DomainController extends Controller
     {
         $status = $request->session()->get('status');
         $domain = DB::table('domains')->find($id);
-        return view('domain.show', compact('domain', 'status'));
+        $checks = DB::table('domain_checks')->where('domain_id', $id)->orderBy('id')->get();
+        return view('domain.show', compact('domain', 'checks', 'status'));
+    }
+
+    public function check(Request $request, $id)
+    {
+        $domain = DB::table('domains')->find($id);
+        $time = Carbon::now();
+        DB::table('domain_checks')->insert(
+            [
+                'domain_id' => $id,
+                //'status_code' => $response->status(),
+                //'h1' => is_null($h1) ? '' : $h1,
+                //'keywords' => is_null($keywords) ? '' : $keywords,
+                //'description' => $description ?? '',
+                'status_code' => 0,
+                'h1' => '',
+                'keywords' => '',
+                'description' => '',
+                'created_at' => $time,
+                'updated_at' => $time,
+            ]
+        );
+        $status = 'Website has been checked!';
+        $request->session()->flash('status', $status);
+        return redirect()->route('domains.show', ['id' => $domain->id]);
     }
 }

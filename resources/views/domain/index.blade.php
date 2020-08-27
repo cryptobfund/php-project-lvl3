@@ -11,8 +11,8 @@
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Created_at</th>
-                    <th>Updated_at</th>
+                    <th>Last check</th>
+                    <th>Status Code</th>
                 </tr>
                 @foreach ($domains as $domain)
                     <tr>
@@ -21,7 +21,7 @@
                             <a href="{{route('domains.show', $domain->id)}}">{{$domain->name}}</a>
                         </td>
                         <td>{{$domain->created_at}}</td>
-                        <td>{{$domain->updated_at}}</td>
+                        <td>{{$domain->status_code}}</td>
                     </tr>
                 @endforeach
             </table>

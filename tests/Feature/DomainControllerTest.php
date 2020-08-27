@@ -51,4 +51,23 @@ class DomainControllerTest extends TestCase
         $response = $this->get(route('welcome'));
         $response->assertOk();
     }
+
+    public function testCheck()
+    {
+        $url = Factory::create()->url;
+        $name = parse_url($url);
+        $parsedName = $name['scheme'] . '://' . $name['host'];
+
+        $id = DB::table('domains')->insertGetId([
+            'name' => $parsedName,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ]);
+        $response = $this->post(route('domains.check', ['id' => $id]));
+        $response->assertRedirect(route('domains.show', ['id' => $id]));
+        $this->assertDatabaseHas('domain_checks', [
+                'domain_id' => $id,
+                'status_code' => 0,
+            ]);
+    }
 }
