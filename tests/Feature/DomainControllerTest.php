@@ -59,9 +59,10 @@ class DomainControllerTest extends TestCase
         $name = parse_url($url);
         $parsedName = $name['scheme'] . '://' . $name['host'];
 
+        $dataForTest = file_get_contents(__DIR__ . '/../fixtures/fake.html');
         Http::fake(
             [
-                $parsedName => Http::response([], 200, []),
+                $parsedName => Http::response($dataForTest)
             ]
         );
 
@@ -75,6 +76,9 @@ class DomainControllerTest extends TestCase
         $this->assertDatabaseHas('domain_checks', [
                 'domain_id' => $id,
                 'status_code' => 200,
+                'h1' => 'some h1 text there',
+                'keywords' => 'some keywords there',
+                'description' => 'some description there'
             ]);
     }
 }
