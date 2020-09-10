@@ -4,7 +4,9 @@
 
 @section('content')
     @if ($status)
-        <h1>{{$status}}</h1>
+        <div class="alert alert-info" role="alert">
+            <span>{{$status}}</span>
+        </div>
     @endif
     <div class="container-lg">
         <h1 class="mt-5 mb-3">Site: {{$domain->name}}</h1>

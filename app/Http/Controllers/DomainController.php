@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use DiDom\Document;
+use Illuminate\Support\Facades\Validator;
 
 class DomainController extends Controller
 {
@@ -32,9 +33,12 @@ class DomainController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required'
-        ]);
+        $validator = Validator::make($request->all(), ['name' => 'required|url']);
+        if ($validator->fails()) {
+            $status = 'Not a valid url';
+            $request->session()->flash('status', $status);
+            return redirect()->route('welcome');
+        }
         $name = parse_url($request->input('name'));
         $parsedName = $name['scheme'] . '://' . $name['host'];
         $domain = DB::table('domains')->where('name', $parsedName)->first();
