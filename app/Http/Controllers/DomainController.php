@@ -65,7 +65,7 @@ class DomainController extends Controller
     {
         $status = $request->session()->get('status');
         $domain = DB::table('domains')->find($id);
-        $checks = DB::table('domain_checks')->where('domain_id', $id)->orderBy('id')->get();
+        $checks = DB::table('domain_checks')->where('domain_id', $id)->orderBy('id', 'desc')->get();
         return view('domain.show', compact('domain', 'checks', 'status'));
     }
 

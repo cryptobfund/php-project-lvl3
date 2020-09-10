@@ -37,9 +37,9 @@
                 <tr>
                     <td>{{ $check->id }}</td>
                     <td>{{ $check->status_code }}</td>
-                    <td>{{ $check->h1 }}</td>
-                    <td>{{ $check->keywords }}</td>
-                    <td>{{ $check->description }}</td>
+                    <td>{{ mb_strlen($check->h1) > 10 ? mb_substr($check->h1, 0, 10) . "..." : $check->h1 }}</td>
+                    <td>{{ mb_strlen($check->keywords) > 30 ? mb_substr($check->keywords, 0, 30) . "..." : $check->keywords }}</td>
+                    <td>{{ mb_strlen($check->description) > 30 ? mb_substr($check->description, 0, 30) . "..." : $check->description }}</td>
                     <td>{{ $check->created_at }}</td>
                 </tr>
             @endforeach
