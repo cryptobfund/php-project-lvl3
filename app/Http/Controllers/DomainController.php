@@ -40,7 +40,7 @@ class DomainController extends Controller
             return redirect()->route('welcome');
         }
         $name = parse_url($request->input('name'));
-        $parsedName = $name['scheme'] . '://' . $name['host'];
+        $parsedName = "{$name['scheme']}://{$name['host']}";
         $domain = DB::table('domains')->where('name', $parsedName)->first();
         if ($domain) {
             $status = 'Url already exists';
