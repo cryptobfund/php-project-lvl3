@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -11,13 +12,8 @@ use Illuminate\Support\Facades\Validator;
 
 class DomainController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
+
+    public function index()
     {
         $domains = DB::table('domains')
             ->leftJoin('domain_checks', 'domains.id', '=', 'domain_checks.domain_id')
@@ -28,7 +24,6 @@ class DomainController extends Controller
             ->get();
         return view('domain.index', compact('domains'));
     }
-
 
     public function store(Request $request)
     {
@@ -55,21 +50,14 @@ class DomainController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request, $id)
+    public function show($id)
     {
         $domain = DB::table('domains')->find($id);
         $checks = DB::table('domain_checks')->where('domain_id', $id)->orderBy('id', 'desc')->get();
         return view('domain.show', compact('domain', 'checks'));
     }
 
-    public function check(Request $request, $id)
+    public function check($id)
     {
         $domain = DB::table('domains')->find($id);
         try {
@@ -92,7 +80,7 @@ class DomainController extends Controller
                 ]
             );
             flash("Website has been checked!")->success();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             flash($e->getMessage())->error();
         }
         return redirect()->route('domains.show', ['id' => $domain->id]);
