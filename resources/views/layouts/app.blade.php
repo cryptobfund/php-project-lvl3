@@ -8,7 +8,7 @@
     <title>@yield('title')</title>
 
     <!-- Scripts -->
-    <!--<script src="https://php-l3-page-analyzer.herokuapp.com/js/app.js" defer></script> -->
+    <!--<script src="/js/app.js"></script> -->
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -38,6 +38,7 @@
 </header>
 
 <main class="flex-grow-1">
+    @include('flash::message')
     @yield('content')
 </main>
 

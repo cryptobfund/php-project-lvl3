@@ -35,15 +35,15 @@ class DomainController extends Controller
     {
         $validator = Validator::make($request->all(), ['name' => 'required|url']);
         if ($validator->fails()) {
-            $status = 'Not a valid url';
-            $request->session()->flash('status', $status);
+            flash('Not a valid url')->error();
             return redirect()->route('welcome');
         }
         $name = parse_url($request->input('name'));
         $parsedName = "{$name['scheme']}://{$name['host']}";
         $domain = DB::table('domains')->where('name', $parsedName)->first();
         if ($domain) {
-            $status = 'Url already exists';
+            flash('Url already exists');
+            return redirect()->route('domains.show', ['id' => $domain->id]);
         } else {
             $time = Carbon::now();
             $id = DB::table('domains')->insertGetId([
@@ -51,11 +51,9 @@ class DomainController extends Controller
                 'created_at' => $time,
                 'updated_at' => $time
             ]);
-            $status = 'Url has been added';
-            $domain = DB::table('domains')->find($id);
+            flash('Url has been added');
+            return redirect()->route('domains.show', $id);
         }
-        $request->session()->flash('status', $status);
-        return redirect()->route('domains.show', ['id' => $domain->id]);
     }
 
     /**
@@ -76,26 +74,29 @@ class DomainController extends Controller
     public function check(Request $request, $id)
     {
         $domain = DB::table('domains')->find($id);
-        $response = Http::get($domain->name);
+        try {
+            $response = Http::get($domain->name);
 
-        $body = new Document($response->body());
-        $h1 = optional($body->first('h1'))->text();
-        $keywords = optional($body->first('meta[name=keywords]'))->getAttribute('content');
-        $description = optional($body->first('meta[name=description]'))->getAttribute('content');
-        $time = Carbon::now();
-        DB::table('domain_checks')->insert(
-            [
-                'domain_id' => $id,
-                'status_code' => $response->status(),
-                'h1' => $h1 ?? '',
-                'keywords' => $keywords ?? '',
-                'description' => $description ?? '',
-                'created_at' => $time,
-                'updated_at' => $time,
-            ]
-        );
-        $status = 'Website has been checked!';
-        $request->session()->flash('status', $status);
+            $body = new Document($response->body());
+            $h1 = optional($body->first('h1'))->text();
+            $keywords = optional($body->first('meta[name=keywords]'))->getAttribute('content');
+            $description = optional($body->first('meta[name=description]'))->getAttribute('content');
+            $time = Carbon::now();
+            DB::table('domain_checks')->insert(
+                [
+                    'domain_id' => $id,
+                    'status_code' => $response->status(),
+                    'h1' => $h1 ?? '',
+                    'keywords' => $keywords ?? '',
+                    'description' => $description ?? '',
+                    'created_at' => $time,
+                    'updated_at' => $time,
+                ]
+            );
+            flash("Website has been checked!")->success();
+        } catch (\Exception $e) {
+            flash($e->getMessage())->error();
+        }
         return redirect()->route('domains.show', ['id' => $domain->id]);
     }
 }
