@@ -19,7 +19,6 @@ class DomainController extends Controller
      */
     public function index(Request $request)
     {
-        $status = $request->session()->get('status');
         $domains = DB::table('domains')
             ->leftJoin('domain_checks', 'domains.id', '=', 'domain_checks.domain_id')
             ->orderBy('domains.id')
@@ -27,7 +26,7 @@ class DomainController extends Controller
             ->distinct('domains.id')
             ->select('domains.id', 'domains.name', 'domain_checks.created_at', 'domain_checks.status_code')
             ->get();
-        return view('domain.index', compact('domains', 'status'));
+        return view('domain.index', compact('domains'));
     }
 
 
@@ -65,10 +64,9 @@ class DomainController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $status = $request->session()->get('status');
         $domain = DB::table('domains')->find($id);
         $checks = DB::table('domain_checks')->where('domain_id', $id)->orderBy('id', 'desc')->get();
-        return view('domain.show', compact('domain', 'checks', 'status'));
+        return view('domain.show', compact('domain', 'checks'));
     }
 
     public function check(Request $request, $id)
