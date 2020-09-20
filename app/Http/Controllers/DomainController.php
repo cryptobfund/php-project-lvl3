@@ -15,14 +15,15 @@ class DomainController extends Controller
 
     public function index()
     {
-        $domains = DB::table('domains')
-            ->leftJoin('domain_checks', 'domains.id', '=', 'domain_checks.domain_id')
-            ->orderBy('domains.id')
-            ->orderByDesc('domain_checks.created_at')
-            ->distinct('domains.id')
-            ->select('domains.id', 'domains.name', 'domain_checks.created_at', 'domain_checks.status_code')
-            ->get();
-        return view('domain.index', compact('domains'));
+        $domains = DB::table('domains')->get();
+        $lastChecks = DB::table('domain_checks')
+            ->select('domain_id', 'created_at', 'status_code')
+            ->orderBy('domain_id')
+            ->orderByDesc('created_at')
+            ->distinct('domain_id')
+            ->get()
+            ->keyBy('domain_id');
+        return view('domain.index', compact('domains', 'lastChecks'));
     }
 
     public function store(Request $request)
@@ -55,34 +56,5 @@ class DomainController extends Controller
         $domain = DB::table('domains')->find($id);
         $checks = DB::table('domain_checks')->where('domain_id', $id)->orderBy('id', 'desc')->get();
         return view('domain.show', compact('domain', 'checks'));
-    }
-
-    public function check($id)
-    {
-        $domain = DB::table('domains')->find($id);
-        try {
-            $response = Http::get($domain->name);
-
-            $body = new Document($response->body());
-            $h1 = optional($body->first('h1'))->text();
-            $keywords = optional($body->first('meta[name=keywords]'))->getAttribute('content');
-            $description = optional($body->first('meta[name=description]'))->getAttribute('content');
-            $time = Carbon::now();
-            DB::table('domain_checks')->insert(
-                [
-                    'domain_id' => $id,
-                    'status_code' => $response->status(),
-                    'h1' => $h1 ?? '',
-                    'keywords' => $keywords ?? '',
-                    'description' => $description ?? '',
-                    'created_at' => $time,
-                    'updated_at' => $time,
-                ]
-            );
-            flash("Website has been checked!")->success();
-        } catch (Exception $e) {
-            flash($e->getMessage())->error();
-        }
-        return redirect()->route('domains.show', ['id' => $domain->id]);
     }
 }

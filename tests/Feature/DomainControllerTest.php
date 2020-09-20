@@ -55,19 +55,4 @@ class DomainControllerTest extends TestCase
         $parsedName = "{$name['scheme']}://{$name['host']}";
         $this->assertDatabaseHas('domains', ['name' => $parsedName]);
     }
-
-    public function testCheck()
-    {
-        $dataForTest = file_get_contents(__DIR__ . '/../fixtures/fake.html');
-        Http::fake([$this->parsedName => Http::response($dataForTest)]);
-        $response = $this->post(route('domains.check', ['id' => $this->id]));
-        $response->assertRedirect(route('domains.show', ['id' => $this->id]));
-        $this->assertDatabaseHas('domain_checks', [
-            'domain_id' => $this->id,
-            'status_code' => 200,
-            'h1' => 'some h1 text there',
-            'keywords' => 'some keywords there',
-            'description' => 'some description there'
-        ]);
-    }
 }
