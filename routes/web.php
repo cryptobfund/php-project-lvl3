@@ -17,10 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::get('/domains', 'DomainController@index')->name('domains.index');
+Route::resource('domains', 'DomainController')->only([
+    'index', 'show', 'store'
+]);
 
-Route::get('/domains/{id}', 'DomainController@show')->name('domains.show');
-
-Route::post('/domains', 'DomainController@store')->name('domains.store');
-
-Route::post('/domains/{id}/checks', 'DomainControllerCheck@check')->name('domains.checks.store');
+Route::resource('domains.checks', 'DomainCheckController')->only([
+    'store'
+]);

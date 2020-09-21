@@ -38,7 +38,7 @@ class DomainController extends Controller
         $domain = DB::table('domains')->where('name', $parsedName)->first();
         if ($domain) {
             flash('Url already exists');
-            return redirect()->route('domains.show', ['id' => $domain->id]);
+            return redirect()->route('domains.show', ['domain' => $domain->id]);
         } else {
             $time = Carbon::now();
             $id = DB::table('domains')->insertGetId([
@@ -47,7 +47,7 @@ class DomainController extends Controller
                 'updated_at' => $time
             ]);
             flash('Url has been added');
-            return redirect()->route('domains.show', $id);
+            return redirect()->route('domains.show', ['domain' => $id]);
         }
     }
 

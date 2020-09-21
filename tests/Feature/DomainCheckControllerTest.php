@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
-class DomainControllerCheckTest extends TestCase
+class DomainCheckControllerTest extends TestCase
 {
     private $id;
     private $parsedName;
@@ -31,8 +31,8 @@ class DomainControllerCheckTest extends TestCase
     {
         $dataForTest = file_get_contents(__DIR__ . '/../fixtures/fake.html');
         Http::fake([$this->parsedName => Http::response($dataForTest)]);
-        $response = $this->post(route('domains.checks.store', ['id' => $this->id]));
-        $response->assertRedirect(route('domains.show', ['id' => $this->id]));
+        $response = $this->post(route('domains.checks.store', ['domain' => $this->id]));
+        $response->assertRedirect(route('domains.show', ['domain' => $this->id]));
         $this->assertDatabaseHas('domain_checks', [
             'domain_id' => $this->id,
             'status_code' => 200,

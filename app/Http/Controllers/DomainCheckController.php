@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Http;
 use DiDom\Document;
 use Illuminate\Support\Facades\Validator;
 
-class DomainControllerCheck extends Controller
+class DomainCheckController extends Controller
 {
 
-    public function check($id)
+    public function store($id)
     {
         $domain = DB::table('domains')->find($id);
         try {
@@ -39,6 +39,6 @@ class DomainControllerCheck extends Controller
         } catch (Exception $e) {
             flash($e->getMessage())->error();
         }
-        return redirect()->route('domains.show', ['id' => $domain->id]);
+        return redirect()->route('domains.show', ['domain' => $domain->id]);
     }
 }
