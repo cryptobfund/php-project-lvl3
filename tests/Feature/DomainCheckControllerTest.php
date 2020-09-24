@@ -31,8 +31,11 @@ class DomainCheckControllerTest extends TestCase
     {
         $dataForTest = file_get_contents(__DIR__ . '/../fixtures/fake.html');
         Http::fake([$this->parsedName => Http::response($dataForTest)]);
-        $response = $this->post(route('domains.checks.store', ['domain' => $this->id]));
-        $response->assertRedirect(route('domains.show', ['domain' => $this->id]));
+
+        $response = $this->post(route('domains.checks.store', $this->id));
+        $response->assertSessionHasNoErrors();
+
+        $response->assertRedirect(route('domains.show', $this->id));
         $this->assertDatabaseHas('domain_checks', [
             'domain_id' => $this->id,
             'status_code' => 200,
